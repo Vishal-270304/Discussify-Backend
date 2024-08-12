@@ -6,6 +6,7 @@ import profileRoute from "./routes/ProfileRoute";
 import clientProfileRoute from "./routes/ClientProfileRoute"
 import SignUpRoute from "./routes/SignUpRoute"
 import LoginRoute from "./routes/LoginRoute"
+import ChatRoute from "./routes/ChatRoute"
 import connectDB from "./config/db";
 
 
@@ -21,6 +22,7 @@ app.use("/api/profile",profileRoute)
 app.use("/api/client-profile",clientProfileRoute)
 app.use("/api/signup",SignUpRoute)
 app.use("/api/login",LoginRoute)
+app.use("/api/chat",ChatRoute)
 
 app.listen(process.env.PORT,()=>{
     console.log(`Server is running on port ${process.env.PORT} `)
