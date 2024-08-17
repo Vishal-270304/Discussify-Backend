@@ -5,6 +5,7 @@ import doubtRoute from "./routes/doubt"
 import profileRoute from "./routes/ProfileRoute";
 import clientProfileRoute from "./routes/ClientProfileRoute"
 import SignUpRoute from "./routes/SignUpRoute"
+import VerifyOtp from "./routes/VerifyOtp"
 import LoginRoute from "./routes/LoginRoute"
 import connectDB from "./config/db";
 
@@ -20,6 +21,7 @@ app.use("/api/doubt",doubtRoute)
 app.use("/api/profile",profileRoute)
 app.use("/api/client-profile",clientProfileRoute)
 app.use("/api/signup",SignUpRoute)
+app.use("/api/verify-otp",VerifyOtp)
 app.use("/api/login",LoginRoute)
 
 app.listen(process.env.PORT,()=>{

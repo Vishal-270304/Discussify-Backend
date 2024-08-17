@@ -3,19 +3,20 @@ import SignUp from "../interfaces/SignUP";
 import {SignUpModel} from "../models/SignUpModel";
 import hashedData from "../utils/hashing";
 import generateToken from "../utils/token";
+import { verifyOtpModel } from "../models/VerifyOtpModel";
 import {sendOtp,generateOtp} from "../utils/sendOtp";
 
+
+
 const SignUp = async(req:Request<{},{},SignUp>,res:Response)  =>{
-
-try {
     
-const {username,password,email,rememberMe,gender} = req.body;
+    try {
+        
+        const {username,password,email,rememberMe,gender} = req.body;
+        
+        const hashedPassword = await hashedData(password)
+        
 
-const hashedPassword = await hashedData(password)
-
-const otp = generateOtp();
-console.log(otp);
-await sendOtp(email,otp);
 
 const newSignUp = new SignUpModel({
     username,
@@ -30,6 +31,20 @@ await newSignUp.save();
 const token = generateToken({
     username:newSignUp.username,
 },res)
+
+
+
+const otp = generateOtp();
+
+const newOtp = new verifyOtpModel({
+    email,
+    enteredOtp : otp
+})
+
+console.log(otp);
+await sendOtp(email,otp);
+
+await newOtp.save()
 
 res.status(201).json({
     message:"User Registered Successfully",
