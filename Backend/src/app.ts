@@ -8,12 +8,13 @@ import SignUpRoute from "./routes/SignUpRoute"
 import VerifyOtp from "./routes/VerifyOtp"
 import LoginRoute from "./routes/LoginRoute"
 import connectDB from "./config/db";
-
+import cookieParser from "cookie-parser";
 
 const app = express()       
 
 
 app.use(express.json())
+app.use(cookieParser())
 connectDB();
 
 app.use("/",homeRoute)

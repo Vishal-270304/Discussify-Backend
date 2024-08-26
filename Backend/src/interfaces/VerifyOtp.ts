@@ -1,6 +1,6 @@
 interface VerifyOtp {
-    email:string;
     enteredOtp:string;
+    email:string;
 }
 
 export default VerifyOtp

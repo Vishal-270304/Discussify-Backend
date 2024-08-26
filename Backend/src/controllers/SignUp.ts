@@ -2,7 +2,6 @@ import {Request,Response} from "express";
 import SignUp from "../interfaces/SignUP";
 import {SignUpModel} from "../models/SignUpModel";
 import hashedData from "../utils/hashing";
-import generateToken from "../utils/token";
 import { verifyOtpModel } from "../models/VerifyOtpModel";
 import {sendOtp,generateOtp} from "../utils/sendOtp";
 
@@ -15,47 +14,51 @@ const SignUp = async(req:Request<{},{},SignUp>,res:Response)  =>{
         const {username,password,email,rememberMe,gender} = req.body;
         
         const hashedPassword = await hashedData(password)
+
+        // If user present 
+        const user = await SignUpModel.findOne({email})
+        if(user){
+            return res.status(400).json({
+                message:"User Already Present"
+            })
+        }
+
+        const otp = generateOtp();
+        console.log(otp);
+
         
 
+        try {
+            await sendOtp(email,otp);
+            const existingOtp = await verifyOtpModel.findOne({ email });
+            if (existingOtp) {
+                existingOtp.username = username;
+                existingOtp.password = hashedPassword;
+                existingOtp.gender = gender;
+                existingOtp.otp = otp;
+                existingOtp.rememberMe = rememberMe;
+                await existingOtp.save();
+            } else {
+                const newOtp = new verifyOtpModel({
+                    username,
+                    password: hashedPassword,
+                    email,
+                    gender,
+                    otp,
+                    rememberMe
+                });
+                await newOtp.save();
+            }
+        } catch (error) {
+            res.status(500).json({
+                message:"Failed to sent Otp",
+                error:error
+            })
+        }
 
-const newSignUp = new SignUpModel({
-    username,
-    password:hashedPassword,
-    email,
-    rememberMe,
-    gender
-})
-
-await newSignUp.save();
-
-const token = generateToken({
-    username:newSignUp.username,
-},res)
-
-
-
-const otp = generateOtp();
-
-const newOtp = new verifyOtpModel({
-    email,
-    enteredOtp : otp
-})
-
-console.log(otp);
-await sendOtp(email,otp);
-
-await newOtp.save()
-
-res.status(201).json({
-    message:"User Registered Successfully",
-    user:{
-        username:newSignUp.username,
-        email:newSignUp.email,
-        rememberMe:newSignUp.rememberMe,
-        gender:newSignUp.gender
-    },
-    token:token
-})
+        res.status(201).json({
+                message:"Otp sent Successfully"
+            })
 
 } catch (error) {
     res.status(500).json({
