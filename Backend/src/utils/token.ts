@@ -10,13 +10,16 @@ const generateToken = (payload:TokenPayload,rememberMe:boolean,res:Response) : v
     const token =  jwt.sign(payload, process.env.JWT_SECRET || '', { expiresIn: rememberMe ? "7d" : "1d" });
     console.log(token);
 
-    res.cookie("token",token,{
-        httpOnly:true,
-        secure:process.env.NODE_ENV === "development",
-        maxAge:rememberMe ? ONE_WEEK : ONE_DAY,
-        sameSite:"strict",
+    res.status(200).json({token});
 
-    })
+    // res.cookie("token",token,{
+    //     httpOnly:true,
+    //     maxAge:rememberMe ? ONE_WEEK : ONE_DAY,
+    //     secure: process.env.NODE_ENV === 'production',
+    //     sameSite:"strict",
+    //     path:"/"
+
+    // })
 }
 
 const verifyToken = (token:string) : TokenPayload | null => {
