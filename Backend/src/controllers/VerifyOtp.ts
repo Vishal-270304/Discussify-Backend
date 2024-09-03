@@ -48,7 +48,10 @@ const VerifyOtpController = async (req:Request<{},{},VerifyOtp>,res:Response) =>
         }
 
     } catch (error) {
-        res.status(500).json("Internal Server Error")
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error
+        });
         console.log(error)
     }
 
